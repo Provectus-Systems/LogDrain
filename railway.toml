@@ -1,0 +1,9 @@
+[build]
+builder = "dockerfile"
+dockerfilePath = "ingest/Dockerfile"
+watchPaths = ["ingest/**"]
+
+[deploy]
+healthcheckPath = "/health"
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3

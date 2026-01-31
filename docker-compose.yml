@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: logdrain-loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./loki-config.yml:/etc/loki/local-config.yaml
+      - loki-data:/loki
+    environment:
+      - LOKI_STORAGE_PATH=/loki
+    restart: unless-stopped
+    networks:
+      - logdrain-network
+
+  grafana:
+    image: grafana/grafana:10.1.0
+    container_name: logdrain-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_EMAIL=alexlorenzo39@gmail.com
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_DEFAULT_THEME=dark
+      - GF_LOG_LEVEL=info
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - loki
+    restart: unless-stopped
+    networks:
+      - logdrain-network
+
+  ingest:
+    build:
+      context: ./ingest
+      dockerfile: Dockerfile
+    container_name: logdrain-ingest
+    ports:
+      - "8000:8000"
+    environment:
+      - LOKI_HOST=http://loki:3100
+      - LOKI_PUSH_PATH=/loki/api/v1/push
+      - INGEST_PORT=8000
+      - INGEST_LOG_LEVEL=INFO
+      - INGEST_MAX_RETRIES=3
+      - INGEST_BATCH_SIZE=100
+      - ALLOWED_SERVICES=provectusquantus,projectboard,provectusquantus-build,projectboard-build
+      - RAILWAY_WEBHOOK_SECRET=your_secret_here
+    volumes:
+      - ./ingest:/app
+    depends_on:
+      - loki
+    restart: unless-stopped
+    networks:
+      - logdrain-network
+
+volumes:
+  loki-data:
+  grafana-data:
+
+networks:
+  logdrain-network:
+    driver: bridge
