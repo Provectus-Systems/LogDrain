@@ -20,16 +20,24 @@ scrape_configs:
   - job_name: 'pq-api'
     metrics_path: /metrics
     scrape_interval: 15s
+    authorization:
+      credentials: __METRICS_TOKEN__
     static_configs:
       - targets: ['host.docker.internal:8000']
         labels:
           service: 'pq-api'
-          environment: 'production'
+          environment: 'local'
 
-  # Uncomment when additional exporters are added:
-  # - job_name: 'postgres'
-  #   static_configs:
-  #     - targets: ['postgres-exporter:9187']
-  # - job_name: 'redis'
-  #   static_configs:
-  #     - targets: ['redis-exporter:9121']
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+        labels:
+          service: 'postgres'
+          environment: 'local'
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+        labels:
+          service: 'redis'
+          environment: 'local'

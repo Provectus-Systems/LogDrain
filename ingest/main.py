@@ -199,8 +199,11 @@ async def ingest_webhook(
 ):
     """Railway log drain webhook endpoint"""
     
-    # Optional webhook secret validation
-    if RAILWAY_WEBHOOK_SECRET and x_railway_webhook_secret != RAILWAY_WEBHOOK_SECRET:
+    # Webhook secret validation (required in production)
+    if not RAILWAY_WEBHOOK_SECRET:
+        logger.error("RAILWAY_WEBHOOK_SECRET is not configured — rejecting request")
+        raise HTTPException(status_code=500, detail="Server misconfigured: webhook secret not set")
+    if x_railway_webhook_secret != RAILWAY_WEBHOOK_SECRET:
         raise HTTPException(status_code=401, detail="Invalid webhook secret")
     
     # Read raw body

@@ -99,6 +99,30 @@ services:
     networks:
       - logdrain-network
 
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: logdrain-postgres-exporter
+    ports:
+      - "9187:9187"
+    environment:
+      - DATA_SOURCE_NAME=${PQ_DATABASE_URL:-postgresql://postgres:devpassword123@postgres:5432/provectus_trading_dev?sslmode=disable}
+    restart: unless-stopped
+    networks:
+      - logdrain-network
+      - pq-network
+
+  redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: logdrain-redis-exporter
+    ports:
+      - "9121:9121"
+    environment:
+      - REDIS_ADDR=${PQ_REDIS_URL:-redis://redis:6379}
+    restart: unless-stopped
+    networks:
+      - logdrain-network
+      - pq-network
+
 volumes:
   loki-data:
   grafana-data:
@@ -107,3 +131,6 @@ volumes:
 networks:
   logdrain-network:
     driver: bridge
+  pq-network:
+    external: true
+    name: provectusquantus_trading-network
