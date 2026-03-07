@@ -11,10 +11,9 @@
       "id": 1,
       "title": "Service Health",
       "type": "stat",
-      "datasource": { "type": "prometheus", "uid": "${prometheus}" },
       "targets": [
         {
-          "expr": "up",
+          "expr": "up{environment=~\"$environment\"}",
           "legendFormat": "{{job}}",
           "refId": "A"
         }
@@ -25,14 +24,12 @@
             { "options": { "0": { "text": "DOWN", "color": "red" }, "1": { "text": "UP", "color": "green" } }, "type": "value" }
           ],
           "thresholds": {
-            "mode": "absolute",
             "steps": [
               { "color": "red", "value": null },
               { "color": "green", "value": 1 }
             ]
           }
-        },
-        "overrides": []
+        }
       },
       "options": {
         "reduceOptions": { "calcs": ["lastNotNull"] },
@@ -41,14 +38,43 @@
       }
     },
     {
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
-      "id": 2,
-      "title": "Prometheus Scrape Duration",
-      "type": "timeseries",
-      "datasource": { "type": "prometheus", "uid": "${prometheus}" },
+      "gridPos": { "h": 4, "w": 24, "x": 0, "y": 4 },
+      "id": 7,
+      "title": "Target Info",
+      "type": "table",
       "targets": [
         {
-          "expr": "scrape_duration_seconds",
+          "expr": "up{environment=~\"$environment\"}",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": { "Time": true, "__name__": true },
+            "renameByName": { "Value": "Status", "job": "Job", "instance": "Instance", "environment": "Environment", "service": "Service" }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "options": { "0": { "text": "DOWN", "color": "red" }, "1": { "text": "UP", "color": "green" } }, "type": "value" }
+          ]
+        }
+      }
+    },
+    {
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "id": 2,
+      "title": "Scrape Duration",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "scrape_duration_seconds{environment=~\"$environment\"}",
           "legendFormat": "{{job}}",
           "refId": "A"
         }
@@ -57,19 +83,17 @@
         "defaults": {
           "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 1, "showPoints": "never" },
           "unit": "s"
-        },
-        "overrides": []
+        }
       }
     },
     {
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
       "id": 3,
       "title": "Samples Scraped",
       "type": "timeseries",
-      "datasource": { "type": "prometheus", "uid": "${prometheus}" },
       "targets": [
         {
-          "expr": "scrape_samples_scraped",
+          "expr": "scrape_samples_scraped{environment=~\"$environment\"}",
           "legendFormat": "{{job}}",
           "refId": "A"
         }
@@ -77,8 +101,54 @@
       "fieldConfig": {
         "defaults": {
           "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 1, "showPoints": "never" }
-        },
-        "overrides": []
+        }
+      }
+    },
+    {
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "id": 4,
+      "title": "Scrape Errors",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "increase(scrape_series_added{environment=~\"$environment\"}[5m])",
+          "legendFormat": "{{job}} series added",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 1, "showPoints": "never" }
+        }
+      }
+    },
+    {
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "id": 5,
+      "title": "Service Uptime (last 24h)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "avg_over_time(up{environment=~\"$environment\"}[1h])",
+          "legendFormat": "{{job}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2, "showPoints": "never" },
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 0.95 },
+              { "color": "green", "value": 0.99 }
+            ]
+          }
+        }
       }
     }
   ],
@@ -88,16 +158,20 @@
   "templating": {
     "list": [
       {
-        "current": { "selected": false, "text": "Prometheus", "value": "prometheus" },
-        "hide": 2,
-        "name": "prometheus",
-        "query": "prometheus",
-        "type": "datasource"
+        "name": "environment",
+        "type": "custom",
+        "query": "production,local",
+        "current": { "selected": true, "text": "production", "value": "production" },
+        "hide": 0,
+        "label": "Environment",
+        "multi": false,
+        "includeAll": true,
+        "allValue": ".*"
       }
     ]
   },
   "time": { "from": "now-1h", "to": "now" },
   "title": "Infrastructure",
   "uid": "infrastructure-overview",
-  "version": 1
+  "version": 2
 }

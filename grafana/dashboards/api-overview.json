@@ -1,7 +1,5 @@
 {
-  "annotations": {
-    "list": []
-  },
+  "annotations": { "list": [] },
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -13,10 +11,9 @@
       "id": 1,
       "title": "Request Rate",
       "type": "stat",
-      "datasource": { "type": "prometheus", "uid": "${prometheus}" },
       "targets": [
         {
-          "expr": "sum(rate(http_requests_total{job=\"pq-api\"}[5m]))",
+          "expr": "sum(rate(http_requests_total{job=~\"pq-api.*\", environment=~\"$environment\"}[5m]))",
           "refId": "A"
         }
       ],
@@ -24,15 +21,13 @@
         "defaults": {
           "unit": "reqps",
           "thresholds": {
-            "mode": "absolute",
             "steps": [
               { "color": "green", "value": null },
               { "color": "yellow", "value": 100 },
               { "color": "red", "value": 500 }
             ]
           }
-        },
-        "overrides": []
+        }
       }
     },
     {
@@ -40,10 +35,9 @@
       "id": 2,
       "title": "Error Rate",
       "type": "stat",
-      "datasource": { "type": "prometheus", "uid": "${prometheus}" },
       "targets": [
         {
-          "expr": "sum(rate(http_requests_total{job=\"pq-api\",status=~\"5..\"}[5m])) / sum(rate(http_requests_total{job=\"pq-api\"}[5m]))",
+          "expr": "sum(rate(http_requests_total{job=~\"pq-api.*\", environment=~\"$environment\", status=~\"5..\"}[5m])) / sum(rate(http_requests_total{job=~\"pq-api.*\", environment=~\"$environment\"}[5m]))",
           "refId": "A"
         }
       ],
@@ -51,15 +45,13 @@
         "defaults": {
           "unit": "percentunit",
           "thresholds": {
-            "mode": "absolute",
             "steps": [
               { "color": "green", "value": null },
               { "color": "yellow", "value": 0.01 },
               { "color": "red", "value": 0.05 }
             ]
           }
-        },
-        "overrides": []
+        }
       }
     },
     {
@@ -67,10 +59,9 @@
       "id": 3,
       "title": "P95 Latency",
       "type": "stat",
-      "datasource": { "type": "prometheus", "uid": "${prometheus}" },
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"pq-api\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=~\"pq-api.*\", environment=~\"$environment\"}[5m])) by (le))",
           "refId": "A"
         }
       ],
@@ -78,15 +69,13 @@
         "defaults": {
           "unit": "s",
           "thresholds": {
-            "mode": "absolute",
             "steps": [
               { "color": "green", "value": null },
               { "color": "yellow", "value": 0.5 },
               { "color": "red", "value": 2 }
             ]
           }
-        },
-        "overrides": []
+        }
       }
     },
     {
@@ -94,25 +83,22 @@
       "id": 4,
       "title": "In-Progress Requests",
       "type": "stat",
-      "datasource": { "type": "prometheus", "uid": "${prometheus}" },
       "targets": [
         {
-          "expr": "sum(http_requests_in_progress{job=\"pq-api\"})",
+          "expr": "sum(http_requests_in_progress{job=~\"pq-api.*\", environment=~\"$environment\"})",
           "refId": "A"
         }
       ],
       "fieldConfig": {
         "defaults": {
           "thresholds": {
-            "mode": "absolute",
             "steps": [
               { "color": "green", "value": null },
               { "color": "yellow", "value": 50 },
               { "color": "red", "value": 100 }
             ]
           }
-        },
-        "overrides": []
+        }
       }
     },
     {
@@ -120,25 +106,18 @@
       "id": 5,
       "title": "Request Rate by Status",
       "type": "timeseries",
-      "datasource": { "type": "prometheus", "uid": "${prometheus}" },
       "targets": [
         {
-          "expr": "sum(rate(http_requests_total{job=\"pq-api\"}[5m])) by (status)",
+          "expr": "sum(rate(http_requests_total{job=~\"pq-api.*\", environment=~\"$environment\"}[5m])) by (status)",
           "legendFormat": "{{status}}",
           "refId": "A"
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "lineWidth": 2,
-            "showPoints": "never"
-          },
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2, "showPoints": "never" },
           "unit": "reqps"
-        },
-        "overrides": []
+        }
       }
     },
     {
@@ -146,67 +125,110 @@
       "id": 6,
       "title": "Latency Distribution",
       "type": "timeseries",
-      "datasource": { "type": "prometheus", "uid": "${prometheus}" },
       "targets": [
         {
-          "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{job=\"pq-api\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{job=~\"pq-api.*\", environment=~\"$environment\"}[5m])) by (le))",
           "legendFormat": "p50",
           "refId": "A"
         },
         {
-          "expr": "histogram_quantile(0.90, sum(rate(http_request_duration_seconds_bucket{job=\"pq-api\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.90, sum(rate(http_request_duration_seconds_bucket{job=~\"pq-api.*\", environment=~\"$environment\"}[5m])) by (le))",
           "legendFormat": "p90",
           "refId": "B"
         },
         {
-          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"pq-api\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=~\"pq-api.*\", environment=~\"$environment\"}[5m])) by (le))",
           "legendFormat": "p95",
           "refId": "C"
         },
         {
-          "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{job=\"pq-api\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{job=~\"pq-api.*\", environment=~\"$environment\"}[5m])) by (le))",
           "legendFormat": "p99",
           "refId": "D"
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "drawStyle": "line",
-            "fillOpacity": 5,
-            "lineWidth": 2,
-            "showPoints": "never"
-          },
+          "custom": { "drawStyle": "line", "fillOpacity": 5, "lineWidth": 2, "showPoints": "never" },
           "unit": "s"
-        },
-        "overrides": []
+        }
       }
     },
     {
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 12 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
       "id": 7,
-      "title": "Request Rate by Endpoint",
+      "title": "Top 10 Endpoints by Request Rate",
       "type": "timeseries",
-      "datasource": { "type": "prometheus", "uid": "${prometheus}" },
       "targets": [
         {
-          "expr": "topk(10, sum(rate(http_requests_total{job=\"pq-api\"}[5m])) by (handler))",
+          "expr": "topk(10, sum(rate(http_requests_total{job=~\"pq-api.*\", environment=~\"$environment\"}[5m])) by (handler))",
           "legendFormat": "{{handler}}",
           "refId": "A"
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "drawStyle": "bars",
-            "fillOpacity": 50,
-            "lineWidth": 1,
-            "showPoints": "never",
-            "stacking": { "mode": "normal" }
-          },
+          "custom": { "drawStyle": "bars", "fillOpacity": 50, "lineWidth": 1, "showPoints": "never", "stacking": { "mode": "normal" } },
           "unit": "reqps"
-        },
-        "overrides": []
+        }
+      }
+    },
+    {
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+      "id": 8,
+      "title": "Slowest Endpoints (P95)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "topk(10, histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=~\"pq-api.*\", environment=~\"$environment\"}[5m])) by (le, handler)))",
+          "legendFormat": "{{handler}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2, "showPoints": "never" },
+          "unit": "s"
+        }
+      }
+    },
+    {
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
+      "id": 9,
+      "title": "Error Rate by Endpoint",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "topk(5, sum(rate(http_requests_total{job=~\"pq-api.*\", environment=~\"$environment\", status=~\"5..\"}[5m])) by (handler))",
+          "legendFormat": "{{handler}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "drawStyle": "line", "fillOpacity": 20, "lineWidth": 2, "showPoints": "never" },
+          "unit": "reqps",
+          "color": { "fixedColor": "red", "mode": "shades" }
+        }
+      }
+    },
+    {
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 20 },
+      "id": 10,
+      "title": "Response Size",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(http_response_size_bytes_sum{job=~\"pq-api.*\", environment=~\"$environment\"}[5m])) / sum(rate(http_response_size_bytes_count{job=~\"pq-api.*\", environment=~\"$environment\"}[5m]))",
+          "legendFormat": "avg response size",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2, "showPoints": "never" },
+          "unit": "bytes"
+        }
       }
     }
   ],
@@ -216,16 +238,19 @@
   "templating": {
     "list": [
       {
-        "current": { "selected": false, "text": "Prometheus", "value": "prometheus" },
-        "hide": 2,
-        "name": "prometheus",
-        "query": "prometheus",
-        "type": "datasource"
+        "name": "environment",
+        "type": "custom",
+        "query": "production,local",
+        "current": { "selected": true, "text": "production", "value": "production" },
+        "hide": 0,
+        "label": "Environment",
+        "multi": false,
+        "includeAll": false
       }
     ]
   },
   "time": { "from": "now-1h", "to": "now" },
   "title": "PQ API Overview",
   "uid": "pq-api-overview",
-  "version": 1
+  "version": 2
 }

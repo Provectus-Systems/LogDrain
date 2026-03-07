@@ -2,25 +2,25 @@ groups:
   - name: pq-api
     rules:
       - alert: HighErrorRate
-        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+        expr: rate(http_requests_total{job=~"pq-api.*", environment="production", status=~"5.."}[5m]) / rate(http_requests_total{job=~"pq-api.*", environment="production"}[5m]) > 0.05
         for: 5m
         labels:
           severity: critical
         annotations:
-          summary: "High error rate on {{ $labels.instance }}"
+          summary: "High error rate on {{ $labels.job }}"
           description: "Error rate is {{ $value | humanizePercentage }} over the last 5 minutes."
 
       - alert: HighLatency
-        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=~"pq-api.*", environment="production"}[5m])) > 2
         for: 5m
         labels:
           severity: warning
         annotations:
-          summary: "High latency on {{ $labels.instance }}"
+          summary: "High latency on {{ $labels.job }}"
           description: "95th percentile latency is {{ $value }}s over the last 5 minutes."
 
       - alert: ServiceDown
-        expr: up == 0
+        expr: up{environment="production"} == 0
         for: 1m
         labels:
           severity: critical
@@ -51,16 +51,16 @@ groups:
   - name: postgres
     rules:
       - alert: PostgresDown
-        expr: up{job="postgres"} == 0
+        expr: up{job=~"postgres.*", environment="production"} == 0
         for: 1m
         labels:
           severity: critical
         annotations:
-          summary: "PostgreSQL is down"
+          summary: "PostgreSQL exporter is down"
           description: "PostgreSQL exporter has been unreachable for more than 1 minute."
 
       - alert: PostgresTooManyConnections
-        expr: pg_stat_activity_count > 80
+        expr: pg_stat_activity_count{environment="production"} > 80
         for: 5m
         labels:
           severity: warning
@@ -69,7 +69,7 @@ groups:
           description: "PostgreSQL has {{ $value }} active connections (threshold: 80)."
 
       - alert: PostgresSlowQueries
-        expr: pg_stat_activity_max_tx_duration{datname!~"template.*"} > 300
+        expr: pg_stat_activity_max_tx_duration{environment="production", datname!~"template.*"} > 300
         for: 2m
         labels:
           severity: warning
@@ -78,7 +78,7 @@ groups:
           description: "PostgreSQL has queries running longer than 5 minutes."
 
       - alert: PostgresDeadlocks
-        expr: increase(pg_stat_database_deadlocks[5m]) > 0
+        expr: increase(pg_stat_database_deadlocks{environment="production"}[5m]) > 0
         for: 0m
         labels:
           severity: warning
@@ -89,16 +89,16 @@ groups:
   - name: redis
     rules:
       - alert: RedisDown
-        expr: up{job="redis"} == 0
+        expr: up{job=~"redis.*", environment="production"} == 0
         for: 1m
         labels:
           severity: critical
         annotations:
-          summary: "Redis is down"
+          summary: "Redis exporter is down"
           description: "Redis exporter has been unreachable for more than 1 minute."
 
       - alert: RedisHighMemoryUsage
-        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.85
+        expr: redis_memory_used_bytes{environment="production"} / redis_memory_max_bytes{environment="production"} > 0.85
         for: 5m
         labels:
           severity: warning
@@ -107,7 +107,7 @@ groups:
           description: "Redis is using {{ $value | humanizePercentage }} of max memory."
 
       - alert: RedisTooManyConnections
-        expr: redis_connected_clients > 100
+        expr: redis_connected_clients{environment="production"} > 100
         for: 5m
         labels:
           severity: warning

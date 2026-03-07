@@ -12,7 +12,7 @@
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
       "targets": [
         {
-          "expr": "pg_stat_activity_count",
+          "expr": "pg_stat_activity_count{environment=~\"$environment\"}",
           "legendFormat": "{{datname}} - {{state}}",
           "refId": "A"
         }
@@ -30,7 +30,7 @@
       "gridPos": { "h": 8, "w": 6, "x": 12, "y": 0 },
       "targets": [
         {
-          "expr": "sum(pg_stat_activity_count) / pg_settings_max_connections",
+          "expr": "sum(pg_stat_activity_count{environment=~\"$environment\"}) / pg_settings_max_connections{environment=~\"$environment\"}",
           "legendFormat": "utilization",
           "refId": "A"
         }
@@ -52,12 +52,12 @@
     },
     {
       "title": "Database Size",
-      "type": "stat",
+      "type": "bargauge",
       "gridPos": { "h": 8, "w": 6, "x": 18, "y": 0 },
       "targets": [
         {
-          "expr": "pg_database_size_bytes{datname=\"pqtt\"}",
-          "legendFormat": "pqtt",
+          "expr": "pg_database_size_bytes{environment=~\"$environment\", datname!~\"template.*\"}",
+          "legendFormat": "{{datname}}",
           "refId": "A"
         }
       ],
@@ -73,20 +73,25 @@
             ]
           }
         }
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "reduceOptions": { "calcs": ["lastNotNull"] }
       }
     },
     {
-      "title": "Transactions (commits/rollbacks)",
+      "title": "Transactions/sec",
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
       "targets": [
         {
-          "expr": "rate(pg_stat_database_xact_commit{datname=\"pqtt\"}[5m])",
+          "expr": "rate(pg_stat_database_xact_commit{environment=~\"$environment\", datname=~\"$database\"}[5m])",
           "legendFormat": "commits/s",
           "refId": "A"
         },
         {
-          "expr": "rate(pg_stat_database_xact_rollback{datname=\"pqtt\"}[5m])",
+          "expr": "rate(pg_stat_database_xact_rollback{environment=~\"$environment\", datname=~\"$database\"}[5m])",
           "legendFormat": "rollbacks/s",
           "refId": "B"
         }
@@ -105,7 +110,7 @@
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
       "targets": [
         {
-          "expr": "increase(pg_stat_database_deadlocks{datname=\"pqtt\"}[5m])",
+          "expr": "increase(pg_stat_database_deadlocks{environment=~\"$environment\", datname=~\"$database\"}[5m])",
           "legendFormat": "deadlocks (5m)",
           "refId": "A"
         }
@@ -123,7 +128,7 @@
       "gridPos": { "h": 8, "w": 8, "x": 0, "y": 16 },
       "targets": [
         {
-          "expr": "pg_stat_database_blks_hit{datname=\"pqtt\"} / (pg_stat_database_blks_hit{datname=\"pqtt\"} + pg_stat_database_blks_read{datname=\"pqtt\"})",
+          "expr": "pg_stat_database_blks_hit{environment=~\"$environment\", datname=~\"$database\"} / (pg_stat_database_blks_hit{environment=~\"$environment\", datname=~\"$database\"} + pg_stat_database_blks_read{environment=~\"$environment\", datname=~\"$database\"})",
           "legendFormat": "hit ratio",
           "refId": "A"
         }
@@ -149,14 +154,29 @@
       "gridPos": { "h": 8, "w": 16, "x": 8, "y": 16 },
       "targets": [
         {
-          "expr": "rate(pg_stat_database_tup_returned{datname=\"pqtt\"}[5m])",
+          "expr": "rate(pg_stat_database_tup_returned{environment=~\"$environment\", datname=~\"$database\"}[5m])",
           "legendFormat": "returned/s",
           "refId": "A"
         },
         {
-          "expr": "rate(pg_stat_database_tup_fetched{datname=\"pqtt\"}[5m])",
+          "expr": "rate(pg_stat_database_tup_fetched{environment=~\"$environment\", datname=~\"$database\"}[5m])",
           "legendFormat": "fetched/s",
           "refId": "B"
+        },
+        {
+          "expr": "rate(pg_stat_database_tup_inserted{environment=~\"$environment\", datname=~\"$database\"}[5m])",
+          "legendFormat": "inserted/s",
+          "refId": "C"
+        },
+        {
+          "expr": "rate(pg_stat_database_tup_updated{environment=~\"$environment\", datname=~\"$database\"}[5m])",
+          "legendFormat": "updated/s",
+          "refId": "D"
+        },
+        {
+          "expr": "rate(pg_stat_database_tup_deleted{environment=~\"$environment\", datname=~\"$database\"}[5m])",
+          "legendFormat": "deleted/s",
+          "refId": "E"
         }
       ],
       "fieldConfig": {
@@ -166,11 +186,79 @@
           "unit": "ops"
         }
       }
+    },
+    {
+      "title": "Temp Bytes Written",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
+      "targets": [
+        {
+          "expr": "rate(pg_stat_database_temp_bytes{environment=~\"$environment\", datname=~\"$database\"}[5m])",
+          "legendFormat": "temp bytes/s",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "lineWidth": 2, "fillOpacity": 10 },
+          "unit": "Bps",
+          "color": { "fixedColor": "orange", "mode": "fixed" }
+        }
+      }
+    },
+    {
+      "title": "Conflicts & Rollbacks",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
+      "targets": [
+        {
+          "expr": "increase(pg_stat_database_conflicts{environment=~\"$environment\", datname=~\"$database\"}[5m])",
+          "legendFormat": "conflicts",
+          "refId": "A"
+        },
+        {
+          "expr": "increase(pg_stat_database_xact_rollback{environment=~\"$environment\", datname=~\"$database\"}[5m])",
+          "legendFormat": "rollbacks",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 2, "fillOpacity": 15 }
+        }
+      }
     }
   ],
   "schemaVersion": 38,
   "tags": ["postgres", "database"],
-  "templating": { "list": [] },
+  "templating": {
+    "list": [
+      {
+        "name": "environment",
+        "type": "custom",
+        "query": "production,local",
+        "current": { "selected": true, "text": "production", "value": "production" },
+        "hide": 0,
+        "label": "Environment",
+        "multi": false,
+        "includeAll": false
+      },
+      {
+        "name": "database",
+        "type": "query",
+        "query": "label_values(pg_database_size_bytes{environment=~\"$environment\", datname!~\"template.*\"}, datname)",
+        "datasource": { "type": "prometheus" },
+        "refresh": 2,
+        "current": {},
+        "hide": 0,
+        "label": "Database",
+        "multi": false,
+        "includeAll": false
+      }
+    ]
+  },
+  "refresh": "30s",
   "time": { "from": "now-1h", "to": "now" },
   "title": "PostgreSQL Monitoring",
   "uid": "postgres-monitoring"

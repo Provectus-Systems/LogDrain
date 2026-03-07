@@ -12,12 +12,12 @@
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
       "targets": [
         {
-          "expr": "redis_memory_used_bytes",
+          "expr": "redis_memory_used_bytes{environment=~\"$environment\"}",
           "legendFormat": "used",
           "refId": "A"
         },
         {
-          "expr": "redis_memory_max_bytes",
+          "expr": "redis_memory_max_bytes{environment=~\"$environment\"}",
           "legendFormat": "max",
           "refId": "B"
         }
@@ -33,10 +33,10 @@
     {
       "title": "Connected Clients",
       "type": "stat",
-      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 0 },
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 0 },
       "targets": [
         {
-          "expr": "redis_connected_clients",
+          "expr": "redis_connected_clients{environment=~\"$environment\"}",
           "legendFormat": "clients",
           "refId": "A"
         }
@@ -55,12 +55,36 @@
       }
     },
     {
-      "title": "Uptime",
+      "title": "Blocked Clients",
       "type": "stat",
-      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 0 },
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 0 },
       "targets": [
         {
-          "expr": "redis_uptime_in_seconds",
+          "expr": "redis_blocked_clients{environment=~\"$environment\"}",
+          "legendFormat": "blocked",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 5 },
+              { "color": "red", "value": 20 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "Uptime",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 0 },
+      "targets": [
+        {
+          "expr": "redis_uptime_in_seconds{environment=~\"$environment\"}",
           "legendFormat": "uptime",
           "refId": "A"
         }
@@ -73,31 +97,37 @@
       }
     },
     {
-      "title": "Commands/sec",
-      "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "title": "Memory Fragmentation Ratio",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 4 },
       "targets": [
         {
-          "expr": "rate(redis_commands_processed_total[5m])",
-          "legendFormat": "commands/s",
+          "expr": "redis_memory_used_bytes{environment=~\"$environment\"} / redis_memory_used_rss_bytes{environment=~\"$environment\"}",
+          "legendFormat": "ratio",
           "refId": "A"
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "color": { "fixedColor": "blue", "mode": "fixed" },
-          "custom": { "lineWidth": 2, "fillOpacity": 15 },
-          "unit": "ops"
+          "decimals": 2,
+          "thresholds": {
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 0.8 },
+              { "color": "yellow", "value": 1.5 },
+              { "color": "red", "value": 2 }
+            ]
+          }
         }
       }
     },
     {
       "title": "Hit Rate",
       "type": "gauge",
-      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 8 },
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 4 },
       "targets": [
         {
-          "expr": "redis_keyspace_hits_total / (redis_keyspace_hits_total + redis_keyspace_misses_total)",
+          "expr": "redis_keyspace_hits_total{environment=~\"$environment\"} / (redis_keyspace_hits_total{environment=~\"$environment\"} + redis_keyspace_misses_total{environment=~\"$environment\"})",
           "legendFormat": "hit rate",
           "refId": "A"
         }
@@ -118,42 +148,60 @@
       }
     },
     {
-      "title": "Blocked Clients",
+      "title": "Evicted Keys",
       "type": "stat",
-      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 8 },
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 4 },
       "targets": [
         {
-          "expr": "redis_blocked_clients",
-          "legendFormat": "blocked",
+          "expr": "increase(redis_evicted_keys_total{environment=~\"$environment\"}[5m])",
+          "legendFormat": "evicted (5m)",
           "refId": "A"
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
           "thresholds": {
             "steps": [
               { "color": "green", "value": null },
-              { "color": "yellow", "value": 5 },
-              { "color": "red", "value": 20 }
+              { "color": "yellow", "value": 10 },
+              { "color": "red", "value": 100 }
             ]
           }
         }
       }
     },
     {
-      "title": "Network I/O",
+      "title": "Commands/sec",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
       "targets": [
         {
-          "expr": "rate(redis_net_input_bytes_total[5m])",
-          "legendFormat": "input bytes/s",
+          "expr": "rate(redis_commands_processed_total{environment=~\"$environment\"}[5m])",
+          "legendFormat": "commands/s",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "blue", "mode": "fixed" },
+          "custom": { "lineWidth": 2, "fillOpacity": 15 },
+          "unit": "ops"
+        }
+      }
+    },
+    {
+      "title": "Network I/O",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "expr": "rate(redis_net_input_bytes_total{environment=~\"$environment\"}[5m])",
+          "legendFormat": "input",
           "refId": "A"
         },
         {
-          "expr": "rate(redis_net_output_bytes_total[5m])",
-          "legendFormat": "output bytes/s",
+          "expr": "rate(redis_net_output_bytes_total{environment=~\"$environment\"}[5m])",
+          "legendFormat": "output",
           "refId": "B"
         }
       ],
@@ -166,12 +214,35 @@
       }
     },
     {
+      "title": "Connected Clients Over Time",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "expr": "redis_connected_clients{environment=~\"$environment\"}",
+          "legendFormat": "clients",
+          "refId": "A"
+        },
+        {
+          "expr": "redis_blocked_clients{environment=~\"$environment\"}",
+          "legendFormat": "blocked",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 2, "fillOpacity": 10 }
+        }
+      }
+    },
+    {
       "title": "Keys by DB",
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
       "targets": [
         {
-          "expr": "redis_db_keys",
+          "expr": "redis_db_keys{environment=~\"$environment\"}",
           "legendFormat": "{{db}}",
           "refId": "A"
         }
@@ -186,7 +257,21 @@
   ],
   "schemaVersion": 38,
   "tags": ["redis", "cache"],
-  "templating": { "list": [] },
+  "templating": {
+    "list": [
+      {
+        "name": "environment",
+        "type": "custom",
+        "query": "production,local",
+        "current": { "selected": true, "text": "production", "value": "production" },
+        "hide": 0,
+        "label": "Environment",
+        "multi": false,
+        "includeAll": false
+      }
+    ]
+  },
+  "refresh": "30s",
   "time": { "from": "now-1h", "to": "now" },
   "title": "Redis Monitoring",
   "uid": "redis-monitoring"
