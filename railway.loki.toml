@@ -1,0 +1,4 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "docker/loki.Dockerfile"
+watchPaths = ["loki-config.yml", "docker/loki.Dockerfile"]

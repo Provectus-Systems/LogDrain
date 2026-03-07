@@ -1,0 +1,4 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "docker/prometheus.Dockerfile"
+watchPaths = ["prometheus.yml", "alert_rules.yml", "docker/prometheus.Dockerfile"]

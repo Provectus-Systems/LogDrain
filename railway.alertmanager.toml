@@ -1,0 +1,4 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "docker/alertmanager.Dockerfile"
+watchPaths = ["alertmanager.yml", "docker/alertmanager.Dockerfile"]
