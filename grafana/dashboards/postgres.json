@@ -242,7 +242,11 @@
         "hide": 0,
         "label": "Environment",
         "multi": false,
-        "includeAll": false
+        "includeAll": false,
+        "options": [
+          { "selected": true, "text": "production", "value": "production" },
+          { "selected": false, "text": "local", "value": "local" }
+        ]
       },
       {
         "name": "database",
