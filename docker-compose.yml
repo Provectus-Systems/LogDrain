@@ -70,13 +70,15 @@ services:
       - logdrain-network
 
   prometheus:
-    image: prom/prometheus:latest
+    build:
+      context: .
+      dockerfile: docker/prometheus.Dockerfile
     container_name: logdrain-prometheus
     ports:
       - "9090:9090"
+    environment:
+      - METRICS_TOKEN=${METRICS_TOKEN}
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./alert_rules.yml:/etc/prometheus/alert_rules.yml
       - prometheus-data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -87,12 +89,14 @@ services:
       - logdrain-network
 
   alertmanager:
-    image: prom/alertmanager:latest
+    build:
+      context: .
+      dockerfile: docker/alertmanager.Dockerfile
     container_name: logdrain-alertmanager
     ports:
       - "9093:9093"
-    volumes:
-      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    environment:
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
     command:
       - '--config.file=/etc/alertmanager/alertmanager.yml'
     restart: unless-stopped

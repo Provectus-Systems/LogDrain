@@ -59,6 +59,8 @@ services:
     build:
       context: .
       dockerfile: docker/prometheus.Dockerfile
+    environment:
+      - METRICS_TOKEN=${METRICS_TOKEN}
     volumes:
       - prometheus-data:/prometheus
     command:
@@ -71,6 +73,8 @@ services:
     build:
       context: .
       dockerfile: docker/alertmanager.Dockerfile
+    environment:
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
     command:
       - '--config.file=/etc/alertmanager/alertmanager.yml'
     restart: unless-stopped
