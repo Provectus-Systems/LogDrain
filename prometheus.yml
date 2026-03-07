@@ -40,16 +40,34 @@ scrape_configs:
           service: 'pq-api'
           environment: 'production'
 
-  - job_name: 'postgres'
+  - job_name: 'postgres-local'
     static_configs:
       - targets: ['postgres-exporter:9187']
         labels:
           service: 'postgres'
           environment: 'local'
 
-  - job_name: 'redis'
+  - job_name: 'postgres-production'
+    scheme: https
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['postgres-exporter-production-804c.up.railway.app']
+        labels:
+          service: 'postgres'
+          environment: 'production'
+
+  - job_name: 'redis-local'
     static_configs:
       - targets: ['redis-exporter:9121']
         labels:
           service: 'redis'
           environment: 'local'
+
+  - job_name: 'redis-production'
+    scheme: https
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['redis-exporter-production-c033.up.railway.app']
+        labels:
+          service: 'redis'
+          environment: 'production'
