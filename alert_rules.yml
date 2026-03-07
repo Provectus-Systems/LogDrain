@@ -98,7 +98,7 @@ groups:
           description: "Redis exporter has been unreachable for more than 1 minute."
 
       - alert: RedisHighMemoryUsage
-        expr: redis_memory_used_bytes{environment="production"} / redis_memory_max_bytes{environment="production"} > 0.85
+        expr: redis_memory_max_bytes{environment="production"} > 0 and redis_memory_used_bytes{environment="production"} / redis_memory_max_bytes{environment="production"} > 0.85
         for: 5m
         labels:
           severity: warning
