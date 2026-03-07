@@ -17,7 +17,7 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
-  - job_name: 'pq-api'
+  - job_name: 'pq-api-local'
     metrics_path: /metrics
     scrape_interval: 15s
     authorization:
@@ -27,6 +27,18 @@ scrape_configs:
         labels:
           service: 'pq-api'
           environment: 'local'
+
+  - job_name: 'pq-api-production'
+    metrics_path: /metrics
+    scheme: https
+    scrape_interval: 30s
+    authorization:
+      credentials: __METRICS_TOKEN__
+    static_configs:
+      - targets: ['provectusquantus-api-production.up.railway.app']
+        labels:
+          service: 'pq-api'
+          environment: 'production'
 
   - job_name: 'postgres'
     static_configs:
