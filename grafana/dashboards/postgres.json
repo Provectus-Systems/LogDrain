@@ -1,5 +1,7 @@
 {
-  "annotations": { "list": [] },
+  "annotations": {
+    "list": []
+  },
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -9,30 +11,57 @@
     {
       "title": "Active Connections",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
       "targets": [
         {
           "expr": "pg_stat_activity_count{environment=~\"$environment\"}",
           "legendFormat": "{{datname}} - {{state}}",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 2, "fillOpacity": 10 }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10
+          }
         }
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
       }
     },
     {
       "title": "Connection Utilization",
       "type": "gauge",
-      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 0 },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
       "targets": [
         {
           "expr": "sum(pg_stat_activity_count{environment=~\"$environment\"}) / pg_settings_max_connections{environment=~\"$environment\"}",
           "legendFormat": "utilization",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
         }
       ],
       "fieldConfig": {
@@ -41,35 +70,68 @@
           "min": 0,
           "thresholds": {
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 0.6 },
-              { "color": "red", "value": 0.85 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.6
+              },
+              {
+                "color": "red",
+                "value": 0.85
+              }
             ]
           },
           "unit": "percentunit"
         }
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
       }
     },
     {
       "title": "Database Size",
       "type": "bargauge",
-      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 0 },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
       "targets": [
         {
           "expr": "pg_database_size_bytes{environment=~\"$environment\", datname!~\"template.*\"}",
           "legendFormat": "{{datname}}",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
         }
       ],
       "fieldConfig": {
         "defaults": {
           "unit": "bytes",
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 536870912 },
-              { "color": "red", "value": 1073741824 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 536870912
+              },
+              {
+                "color": "red",
+                "value": 1073741824
+              }
             ]
           }
         }
@@ -77,60 +139,118 @@
       "options": {
         "orientation": "horizontal",
         "displayMode": "gradient",
-        "reduceOptions": { "calcs": ["lastNotNull"] }
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
       }
     },
     {
       "title": "Transactions/sec",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
       "targets": [
         {
           "expr": "rate(pg_stat_database_xact_commit{environment=~\"$environment\", datname=~\"$database\"}[5m])",
           "legendFormat": "commits/s",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
         },
         {
           "expr": "rate(pg_stat_database_xact_rollback{environment=~\"$environment\", datname=~\"$database\"}[5m])",
           "legendFormat": "rollbacks/s",
-          "refId": "B"
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 2, "fillOpacity": 10 },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10
+          },
           "unit": "ops"
         }
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
       }
     },
     {
       "title": "Deadlocks",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
       "targets": [
         {
           "expr": "increase(pg_stat_database_deadlocks{environment=~\"$environment\", datname=~\"$database\"}[5m])",
           "legendFormat": "deadlocks (5m)",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "color": { "fixedColor": "red", "mode": "fixed" },
-          "custom": { "lineWidth": 2, "fillOpacity": 20 }
+          "color": {
+            "fixedColor": "red",
+            "mode": "fixed"
+          },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 20
+          }
         }
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
       }
     },
     {
       "title": "Cache Hit Ratio",
       "type": "gauge",
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 16 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 16
+      },
       "targets": [
         {
           "expr": "pg_stat_database_blks_hit{environment=~\"$environment\", datname=~\"$database\"} / (pg_stat_database_blks_hit{environment=~\"$environment\", datname=~\"$database\"} + pg_stat_database_blks_read{environment=~\"$environment\", datname=~\"$database\"})",
           "legendFormat": "hit ratio",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
         }
       ],
       "fieldConfig": {
@@ -140,134 +260,256 @@
           "unit": "percentunit",
           "thresholds": {
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "yellow", "value": 0.9 },
-              { "color": "green", "value": 0.99 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.9
+              },
+              {
+                "color": "green",
+                "value": 0.99
+              }
             ]
           }
         }
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
       }
     },
     {
       "title": "Rows Returned vs Fetched",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 16, "x": 8, "y": 16 },
+      "gridPos": {
+        "h": 8,
+        "w": 16,
+        "x": 8,
+        "y": 16
+      },
       "targets": [
         {
           "expr": "rate(pg_stat_database_tup_returned{environment=~\"$environment\", datname=~\"$database\"}[5m])",
           "legendFormat": "returned/s",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
         },
         {
           "expr": "rate(pg_stat_database_tup_fetched{environment=~\"$environment\", datname=~\"$database\"}[5m])",
           "legendFormat": "fetched/s",
-          "refId": "B"
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
         },
         {
           "expr": "rate(pg_stat_database_tup_inserted{environment=~\"$environment\", datname=~\"$database\"}[5m])",
           "legendFormat": "inserted/s",
-          "refId": "C"
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
         },
         {
           "expr": "rate(pg_stat_database_tup_updated{environment=~\"$environment\", datname=~\"$database\"}[5m])",
           "legendFormat": "updated/s",
-          "refId": "D"
+          "refId": "D",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
         },
         {
           "expr": "rate(pg_stat_database_tup_deleted{environment=~\"$environment\", datname=~\"$database\"}[5m])",
           "legendFormat": "deleted/s",
-          "refId": "E"
+          "refId": "E",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 2, "fillOpacity": 10 },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10
+          },
           "unit": "ops"
         }
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
       }
     },
     {
       "title": "Temp Bytes Written",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
       "targets": [
         {
           "expr": "rate(pg_stat_database_temp_bytes{environment=~\"$environment\", datname=~\"$database\"}[5m])",
           "legendFormat": "temp bytes/s",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "custom": { "lineWidth": 2, "fillOpacity": 10 },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10
+          },
           "unit": "Bps",
-          "color": { "fixedColor": "orange", "mode": "fixed" }
+          "color": {
+            "fixedColor": "orange",
+            "mode": "fixed"
+          }
         }
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
       }
     },
     {
       "title": "Conflicts & Rollbacks",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
       "targets": [
         {
           "expr": "increase(pg_stat_database_conflicts{environment=~\"$environment\", datname=~\"$database\"}[5m])",
           "legendFormat": "conflicts",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
         },
         {
           "expr": "increase(pg_stat_database_xact_rollback{environment=~\"$environment\", datname=~\"$database\"}[5m])",
           "legendFormat": "rollbacks",
-          "refId": "B"
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "palette-classic" },
-          "custom": { "lineWidth": 2, "fillOpacity": 15 }
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 15
+          }
         }
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
       }
     }
   ],
   "schemaVersion": 38,
-  "tags": ["postgres", "database"],
+  "tags": [
+    "postgres",
+    "database"
+  ],
   "templating": {
     "list": [
       {
         "name": "environment",
         "type": "custom",
         "query": "production,local",
-        "current": { "selected": true, "text": "production", "value": "production" },
+        "current": {
+          "selected": true,
+          "text": "production",
+          "value": "production"
+        },
         "hide": 0,
         "label": "Environment",
         "multi": false,
         "includeAll": false,
         "options": [
-          { "selected": true, "text": "production", "value": "production" },
-          { "selected": false, "text": "local", "value": "local" }
+          {
+            "selected": true,
+            "text": "production",
+            "value": "production"
+          },
+          {
+            "selected": false,
+            "text": "local",
+            "value": "local"
+          }
         ]
       },
       {
         "name": "database",
         "type": "custom",
         "query": "railway,provectus_trading_dev",
-        "current": { "selected": true, "text": "railway", "value": "railway" },
+        "current": {
+          "selected": true,
+          "text": "railway",
+          "value": "railway"
+        },
         "hide": 0,
         "label": "Database",
         "multi": false,
         "includeAll": true,
         "allValue": ".+",
         "options": [
-          { "selected": false, "text": "All", "value": "$__all" },
-          { "selected": true, "text": "railway", "value": "railway" },
-          { "selected": false, "text": "provectus_trading_dev", "value": "provectus_trading_dev" }
+          {
+            "selected": false,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": true,
+            "text": "railway",
+            "value": "railway"
+          },
+          {
+            "selected": false,
+            "text": "provectus_trading_dev",
+            "value": "provectus_trading_dev"
+          }
         ]
       }
     ]
   },
   "refresh": "30s",
-  "time": { "from": "now-1h", "to": "now" },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
   "title": "PostgreSQL Monitoring",
   "uid": "postgres-monitoring"
 }
