@@ -250,15 +250,19 @@
       },
       {
         "name": "database",
-        "type": "query",
-        "query": "label_values(pg_database_size_bytes{environment=~\"$environment\", datname!~\"template.*\"}, datname)",
-        "datasource": { "type": "prometheus" },
-        "refresh": 2,
-        "current": {},
+        "type": "custom",
+        "query": "railway,provectus_trading_dev",
+        "current": { "selected": true, "text": "railway", "value": "railway" },
         "hide": 0,
         "label": "Database",
         "multi": false,
-        "includeAll": false
+        "includeAll": true,
+        "allValue": ".+",
+        "options": [
+          { "selected": false, "text": "All", "value": "$__all" },
+          { "selected": true, "text": "railway", "value": "railway" },
+          { "selected": false, "text": "provectus_trading_dev", "value": "provectus_trading_dev" }
+        ]
       }
     ]
   },

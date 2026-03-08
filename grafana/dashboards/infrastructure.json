@@ -166,7 +166,7 @@
         "label": "Environment",
         "multi": false,
         "includeAll": true,
-        "allValue": ".*",
+        "allValue": ".+",
         "options": [
           { "selected": false, "text": "All", "value": "$__all" },
           { "selected": true, "text": "production", "value": "production" },

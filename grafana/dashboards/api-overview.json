@@ -81,11 +81,11 @@
     {
       "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
       "id": 4,
-      "title": "In-Progress Requests",
+      "title": "Total Requests (1h)",
       "type": "stat",
       "targets": [
         {
-          "expr": "sum(http_requests_in_progress{job=~\"pq-api.*\", environment=~\"$environment\"})",
+          "expr": "sum(increase(http_requests_total{job=~\"pq-api.*\", environment=~\"$environment\"}[1h]))",
           "refId": "A"
         }
       ],
@@ -93,11 +93,12 @@
         "defaults": {
           "thresholds": {
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 50 },
-              { "color": "red", "value": 100 }
+              { "color": "blue", "value": null },
+              { "color": "green", "value": 100 },
+              { "color": "yellow", "value": 10000 }
             ]
-          }
+          },
+          "decimals": 0
         }
       }
     },
