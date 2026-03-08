@@ -5,3 +5,4 @@ COPY docker/alertmanager-entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh && chown -R nobody:nobody /etc/alertmanager
 USER nobody
 ENTRYPOINT ["/entrypoint.sh"]
+CMD ["--config.file=/etc/alertmanager/alertmanager.yml"]

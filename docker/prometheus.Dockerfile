@@ -6,3 +6,4 @@ COPY docker/prometheus-entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh && chown -R nobody:nobody /etc/prometheus
 USER nobody
 ENTRYPOINT ["/entrypoint.sh"]
+CMD ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.retention.time=30d", "--web.enable-lifecycle"]
