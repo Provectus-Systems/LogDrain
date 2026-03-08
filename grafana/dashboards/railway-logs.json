@@ -108,13 +108,14 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum(rate({service=\"$service\"}[$__range])) by (level)",
+          "expr": "sum(rate({service=~\"$service\"}[$__range])) by (level)",
           "queryType": "range",
           "refId": "A"
         }
       ],
       "title": "Log Volume by Service",
-      "type": "timeseries"
+      "type": "timeseries",
+      "description": "Rate of log lines per second grouped by severity level. Spikes in ERROR or WARN levels may indicate application issues requiring investigation."
     },
     {
       "datasource": {
@@ -145,13 +146,14 @@
             "uid": "${datasource}"
           },
           "editorMode": "builder",
-          "expr": "{service=\"$service\", level=~\"$level\"} $search",
+          "expr": "{service=~\"$service\", level=~\"$level\"} |~ \"$search\"",
           "queryType": "range",
           "refId": "A"
         }
       ],
       "title": "Logs",
-      "type": "logs"
+      "type": "logs",
+      "description": "Live log stream from Railway services filtered by service name, log level, and search text. Click any log line to expand and see all labels."
     }
   ],
   "refresh": "5s",
@@ -198,6 +200,7 @@
         "definition": "label_values(service)",
         "hide": 0,
         "includeAll": true,
+        "allValue": ".+",
         "multi": true,
         "name": "service",
         "options": [],
@@ -229,6 +232,7 @@
         "definition": "label_values(level)",
         "hide": 0,
         "includeAll": true,
+        "allValue": ".+",
         "multi": true,
         "name": "level",
         "options": [
@@ -276,7 +280,7 @@
         "multi": false,
         "name": "search",
         "options": [],
-        "query": ">\"\"",
+        "query": "",
         "refresh": 0,
         "regex": "",
         "skipUrlSync": false,
