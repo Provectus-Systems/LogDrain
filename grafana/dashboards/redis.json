@@ -52,7 +52,8 @@
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
-      }
+      },
+      "description": "Redis memory consumption (used vs. max). When used approaches max, Redis starts evicting keys based on its eviction policy."
     },
     {
       "title": "Connected Clients",
@@ -100,7 +101,8 @@
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
-      }
+      },
+      "description": "Current number of client connections to Redis. Sudden spikes may indicate connection leaks in application code."
     },
     {
       "title": "Blocked Clients",
@@ -148,7 +150,8 @@
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
-      }
+      },
+      "description": "Clients blocked on BLPOP/BRPOP (waiting for list data). A few is normal for queue consumers; many blocked clients may indicate stuck producers."
     },
     {
       "title": "Uptime",
@@ -182,7 +185,8 @@
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
-      }
+      },
+      "description": "Time since the last Redis restart. Unexpected resets may indicate OOM kills or crashes."
     },
     {
       "title": "Memory Fragmentation Ratio",
@@ -232,7 +236,8 @@
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
-      }
+      },
+      "description": "Ratio of used memory to RSS memory. Values near 1.0 are ideal. Below 0.8 or above 1.5 indicates fragmentation; above 2.0 is problematic."
     },
     {
       "title": "Hit Rate",
@@ -280,7 +285,8 @@
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
-      }
+      },
+      "description": "Percentage of key lookups that found data (hits vs. misses). Low hit rates suggest the cache isn't effective \u2014 data may be expiring too quickly or not being cached."
     },
     {
       "title": "Evicted Keys",
@@ -325,7 +331,8 @@
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
-      }
+      },
+      "description": "Keys removed by Redis to free memory (only when maxmemory is set). Non-zero values mean Redis is under memory pressure."
     },
     {
       "title": "Commands/sec",
@@ -363,7 +370,8 @@
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
-      }
+      },
+      "description": "Total Redis commands processed per second. Baseline for understanding load; correlate with latency if commands/sec spikes."
     },
     {
       "title": "Network I/O",
@@ -409,7 +417,8 @@
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
-      }
+      },
+      "description": "Bytes per second flowing in and out of Redis. High output relative to input may indicate large key reads (e.g., big hash/set operations)."
     },
     {
       "title": "Connected Clients Over Time",
@@ -454,7 +463,8 @@
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
-      }
+      },
+      "description": "Historical view of connected and blocked client counts. Helps identify patterns like connection buildup during peak hours."
     },
     {
       "title": "Keys by DB",
@@ -490,7 +500,8 @@
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
-      }
+      },
+      "description": "Number of keys in each Redis database (db0-db15). Most applications use db0; keys in other databases may indicate Celery or caching configuration."
     }
   ],
   "schemaVersion": 38,

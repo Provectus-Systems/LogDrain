@@ -72,7 +72,8 @@
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
-      }
+      },
+      "description": "Current up/down status for each monitored service. Green = UP, Red = DOWN. Based on Prometheus scrape reachability."
     },
     {
       "gridPos": {
@@ -136,7 +137,8 @@
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
-      }
+      },
+      "description": "Detailed table of all Prometheus scrape targets showing environment, instance address, job name, and current status."
     },
     {
       "gridPos": {
@@ -173,7 +175,8 @@
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
-      }
+      },
+      "description": "How long Prometheus takes to collect metrics from each target. Consistently high values (>5s) may indicate target performance issues."
     },
     {
       "gridPos": {
@@ -209,7 +212,8 @@
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
-      }
+      },
+      "description": "Number of metric samples collected per scrape from each target. A sudden drop means the target is exposing fewer metrics, possibly due to a misconfiguration."
     },
     {
       "gridPos": {
@@ -245,7 +249,8 @@
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
-      }
+      },
+      "description": "New metric series added per 5-minute window. Spikes indicate a target started exposing new metrics, which can cause cardinality issues."
     },
     {
       "gridPos": {
@@ -301,7 +306,8 @@
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
-      }
+      },
+      "description": "Rolling 1-hour average of service availability. 1.0 = 100% uptime. Values below 0.99 (yellow) or 0.95 (red) indicate reliability issues."
     }
   ],
   "refresh": "30s",
