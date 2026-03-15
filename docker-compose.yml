@@ -109,11 +109,10 @@ services:
     ports:
       - "9187:9187"
     environment:
-      - DATA_SOURCE_NAME=${PQ_DATABASE_URL:-postgresql://postgres:devpassword123@postgres:5432/provectus_trading_dev?sslmode=disable}
+      - DATA_SOURCE_NAME=${PQ_DATABASE_URL:-postgresql://postgres:devpassword123@host.docker.internal:5432/provectus_trading_dev?sslmode=disable}
     restart: unless-stopped
     networks:
       - logdrain-network
-      - pq-network
 
   redis-exporter:
     image: oliver006/redis_exporter:latest
@@ -121,11 +120,10 @@ services:
     ports:
       - "9121:9121"
     environment:
-      - REDIS_ADDR=${PQ_REDIS_URL:-redis://redis:6379}
+      - REDIS_ADDR=${PQ_REDIS_URL:-redis://host.docker.internal:6379}
     restart: unless-stopped
     networks:
       - logdrain-network
-      - pq-network
 
 volumes:
   loki-data:
@@ -135,6 +133,3 @@ volumes:
 networks:
   logdrain-network:
     driver: bridge
-  pq-network:
-    external: true
-    name: provectusquantus_trading-network
