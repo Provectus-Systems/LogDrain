@@ -32,29 +32,6 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-  ingest:
-    build:
-      context: .
-      dockerfile: ingest/Dockerfile
-    environment:
-      - LOKI_HOST=${LOKI_HOST:-http://loki:3100}
-      - LOKI_PUSH_PATH=/loki/api/v1/push
-      - INGEST_PORT=${PORT:-8000}
-      - INGEST_LOG_LEVEL=INFO
-      - INGEST_MAX_RETRIES=3
-      - INGEST_BATCH_SIZE=100
-      - ALLOWED_SERVICES=${ALLOWED_SERVICES}
-      - RAILWAY_WEBHOOK_SECRET=${RAILWAY_WEBHOOK_SECRET}
-    depends_on:
-      loki:
-        condition: service_healthy
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
   prometheus:
     build:
       context: .

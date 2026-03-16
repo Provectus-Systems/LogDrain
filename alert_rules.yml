@@ -39,15 +39,6 @@ groups:
           summary: "Loki is down"
           description: "Loki has been unreachable for more than 2 minutes."
 
-      - alert: HighIngestErrorRate
-        expr: rate(http_requests_total{job="ingest",status=~"5.."}[5m]) > 0.1
-        for: 5m
-        labels:
-          severity: warning
-        annotations:
-          summary: "High ingest error rate"
-          description: "Ingest proxy is returning errors at {{ $value }}/s."
-
   - name: postgres
     rules:
       - alert: PostgresDown
