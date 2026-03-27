@@ -2,8 +2,8 @@ groups:
   - name: pq-api
     rules:
       - alert: HighErrorRate
-        expr: rate(http_requests_total{job=~"pq-api.*", environment="production", status=~"5.."}[5m]) / rate(http_requests_total{job=~"pq-api.*", environment="production"}[5m]) > 0.05
-        for: 5m
+        expr: sum(rate(http_requests_total{job=~"pq-api.*", environment="production", status=~"5.."}[10m])) / sum(rate(http_requests_total{job=~"pq-api.*", environment="production"}[10m])) > 0.05
+        for: 10m
         labels:
           severity: critical
         annotations:
