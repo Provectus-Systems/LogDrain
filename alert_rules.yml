@@ -88,6 +88,32 @@ groups:
           summary: "Celery worker cannot reach Redis — idempotency claims unguarded"
           description: "Worker fell back to DB-only idempotency. Redis lock is unavailable."
 
+  - name: reconciliation
+    rules:
+      - alert: CashDriftDetected
+        expr: pq_reconciliation_cash_drift_accounts > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Cash drift detected on {{ $value }} accounts"
+
+      - alert: PositionDriftDetected
+        expr: pq_reconciliation_position_drift_count > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Position quantity drift on {{ $value }} positions"
+
+      - alert: InvariantViolation
+        expr: pq_reconciliation_invariant_violations > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $value }} sandbox invariant violations detected"
+
   - name: redis
     rules:
       - alert: RedisDown
