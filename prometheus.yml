@@ -71,3 +71,13 @@ scrape_configs:
         labels:
           service: 'redis'
           environment: 'production'
+
+  - job_name: 'celery-worker-production'
+    metrics_path: /metrics
+    scheme: https
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['celery-worker-production-c446.up.railway.app']
+        labels:
+          service: 'celery-worker'
+          environment: 'production'

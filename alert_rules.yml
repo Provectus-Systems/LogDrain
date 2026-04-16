@@ -77,6 +77,17 @@ groups:
           summary: "PostgreSQL deadlocks detected"
           description: "{{ $value }} deadlocks detected in the last 5 minutes."
 
+  - name: celery-worker
+    rules:
+      - alert: RedisUnavailableForWorker
+        expr: increase(pq_sandbox_deployment_bar_claims_total{result="redis_unavailable", environment="production"}[2m]) > 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Celery worker cannot reach Redis — idempotency claims unguarded"
+          description: "Worker fell back to DB-only idempotency. Redis lock is unavailable."
+
   - name: redis
     rules:
       - alert: RedisDown
